@@ -38,7 +38,7 @@ namespace YSGM
         public string GET(int cmd, Dictionary<string, string> param) // These both are numbers, but string for convenience
         {
 #if DEBUG
-            var builder = new UriBuilder("http://hk4e-storage.mihoyo.com:14311/api");
+            var builder = new UriBuilder("http://10.0.0.2:22111/api");
 #else
             var builder = new UriBuilder(ConfigurationManager.AppSettings.Get("MUIP_HOST")!);
 #endif
@@ -46,10 +46,25 @@ namespace YSGM
             foreach(KeyValuePair<string, string> entry in param) {
                 query[entry.Key] = entry.Value;
             }
+            query["msg"] = query["msg"].Replace("+", " ");
             query["cmd"] = cmd.ToString();
             query["region"] = ConfigurationManager.AppSettings.Get("MUIP_TARGET_REGION");
-            query["ticket"] = $"YSGM@{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
-            query["sign"] = SHA($"{query.ToString()}1d8z98SAKF98bdf878skswa8kdjfy1m9dses");
+            query["ticket"] = $"YSGM";
+#if DEBUG
+            string muip_sign = "20a45af71e490adc44d11f174ea6c23ebb74d3ea";
+
+#else
+            string muip_sign = ConfigurationManager.AppSettings.Get("MUIP_SIGN");
+#endif
+            
+            String query_str = query.ToString();
+            
+
+            string sign_str = $"{query_str}{muip_sign}";
+            
+            query["sign"] = SHA(sign_str);
+
+ 
             builder.Query = query.ToString();
 
             var client = new HttpClient();
@@ -58,7 +73,7 @@ namespace YSGM
             url = url.Replace("%2c", ",");
             url = url.Replace("%3d", "=");
             url = url.Replace("%3a", ":");
-
+            Console.WriteLine(url);
             var webRequest = new HttpRequestMessage(HttpMethod.Get, url);
 
             var response = client.Send(webRequest);
