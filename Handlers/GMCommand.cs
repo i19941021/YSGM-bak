@@ -1,15 +1,15 @@
-﻿namespace YSGM.Handlers
+﻿using System.Configuration;
+
+namespace YSGM.Handlers
 {
     public class GMCommand : BaseCommand
     {
         public string Execute(string[] args)
         {
-            if (args.Length < 2)
-            {
-                return "Usage: gm <uid> <command>";
-            }
-            string uid = args[0];
-            string cmd = string.Join(" ", args.Skip(1));
+            
+            string uid = ConfigurationManager.AppSettings.Get("UID");
+            string cmd = string.Join(" ", args);
+            
             return MUIPManager.Instance.GM(uid, cmd);
         }
     }

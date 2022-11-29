@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
+using System.Security.Policy;
 using System.Text;
 using System.Text.Json;
+using System.Web;
 using System.Text.Json.Serialization;
 using static Proto.WatcherBin.Types;
 
@@ -11,20 +13,26 @@ namespace YSGM.Handlers
     {
         public string Execute(string[] args)
         {
+      
+            
             if (args.Length < 1)
             {
                 Redirect();
             }
+            /*
             byte[] b = new byte[0];
             try
             {
                 b = Convert.FromBase64String(args[0]);
+               
             } catch
             {
                 Redirect();
             }
-            string MailReq = Encoding.UTF8.GetString(b);
-
+            */
+            //string MailReq = Encoding.UTF8.GetString(b);
+            string MailReq = string.Join(" ",args);
+            Console.WriteLine(MailReq);
             var dict = new Dictionary<string, string>();
             var data = JsonSerializer.Deserialize<MailReqI>(MailReq);
 #if DEBUG
